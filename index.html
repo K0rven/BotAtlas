@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atlas — Assistente Inteligente para WhatsApp</title>
+  <meta name="description" content="O Atlas é uma plataforma de atendimento inteligente para WhatsApp que ajuda empresas a automatizarem conversas, qualificarem clientes e prestarem suporte 24 horas por dia." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-base: #070b14;
+      --bg-surface: #0d1526;
+      --bg-card: #111a2e;
+      --accent-green: #00e676;
+      --accent-blue: #3d8ef8;
+      --accent-purple: #7c5cfc;
+      --accent-teal: #00d4aa;
+      --text-primary: #f0f4ff;
+      --text-secondary: #8a9bc8;
+      --text-muted: #4a5a80;
+      --border: rgba(61, 142, 248, 0.15);
+      --border-glow: rgba(61, 142, 248, 0.4);
+      --gradient-accent: linear-gradient(135deg, #3d8ef8, #7c5cfc);
+      --shadow-card: 0 8px 40px rgba(0,0,0,0.5);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* NAVBAR */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.2rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(7, 11, 20, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.3s;
+    }
+
+    .nav-logo {
+      display: flex; align-items: center; gap: 0.6rem;
+      font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px;
+      color: var(--text-primary); text-decoration: none;
+    }
+
+    .nav-logo-icon {
+      width: 36px; height: 36px;
+      background: var(--gradient-accent);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+    }
+
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+
+    .nav-links a {
+      color: var(--text-secondary); text-decoration: none;
+      font-size: 0.9rem; font-weight: 500; transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text-primary); }
+
+    .nav-cta {
+      background: var(--gradient-accent) !important;
+      color: #fff !important;
+      padding: 0.5rem 1.3rem;
+      border-radius: 8px;
+      font-weight: 600 !important;
+      transition: opacity 0.2s, transform 0.2s !important;
+    }
+
+    .nav-cta:hover { opacity: 0.85 !important; transform: translateY(-1px) !important; }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; padding: 8rem 2rem 5rem; text-align: center; overflow: hidden;
+    }
+
+    .hero-glow {
+      position: absolute; width: 800px; height: 800px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(61,142,248,0.12) 0%, transparent 70%);
+      top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;
+    }
+
+    .hero-glow-2 {
+      position: absolute; width: 400px; height: 400px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(124,92,252,0.1) 0%, transparent 70%);
+      top: 20%; right: 10%; pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(0,230,118,0.1); border: 1px solid rgba(0,230,118,0.3);
+      color: var(--accent-green); font-size: 0.8rem; font-weight: 600;
+      padding: 0.4rem 1rem; border-radius: 100px; margin-bottom: 2rem; letter-spacing: 0.5px;
+      animation: fadeInDown 0.8s ease both;
+    }
+
+    .badge-dot {
+      width: 6px; height: 6px; background: var(--accent-green); border-radius: 50%;
+      animation: pulse-dot 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .hero-content { position: relative; z-index: 1; max-width: 820px; }
+
+    .hero h1 {
+      font-size: clamp(2.8rem, 6vw, 5rem); font-weight: 900;
+      line-height: 1.1; letter-spacing: -2px; margin-bottom: 1.5rem;
+      animation: fadeInUp 0.9s ease 0.1s both;
+    }
+
+    .hero h1 span {
+      background: var(--gradient-accent);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.15rem; color: var(--text-secondary);
+      max-width: 580px; margin: 0 auto 2.5rem; line-height: 1.7;
+      animation: fadeInUp 0.9s ease 0.2s both;
+    }
+
+    .hero-actions {
+      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+      animation: fadeInUp 0.9s ease 0.3s both;
+    }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--gradient-accent); color: #fff; text-decoration: none;
+      padding: 0.9rem 2rem; border-radius: 12px; font-weight: 700; font-size: 1rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 24px rgba(61,142,248,0.3); border: none; cursor: pointer;
+    }
+
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(61,142,248,0.45); }
+
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: transparent; color: var(--text-primary); text-decoration: none;
+      padding: 0.9rem 2rem; border-radius: 12px; font-weight: 600; font-size: 1rem;
+      border: 1px solid var(--border); transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--border-glow); background: rgba(61,142,248,0.06); transform: translateY(-2px);
+    }
+
+    /* STATS */
+    .stats {
+      display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap;
+      margin-top: 4rem; animation: fadeInUp 0.9s ease 0.5s both;
+    }
+
+    .stat-number {
+      font-size: 2rem; font-weight: 800;
+      background: var(--gradient-accent);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    .stat-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; margin-top: 0.2rem; letter-spacing: 0.5px; }
+
+    /* CHAT MOCKUP */
+    .hero-visual { margin-top: 5rem; position: relative; z-index: 1; animation: fadeInUp 1s ease 0.4s both; }
+
+    .chat-mockup {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px;
+      width: 340px; margin: 0 auto;
+      box-shadow: var(--shadow-card), 0 0 40px rgba(61,142,248,0.15); overflow: hidden;
+    }
+
+    .chat-header {
+      background: #075e54; padding: 1rem;
+      display: flex; align-items: center; gap: 0.7rem;
+    }
+
+    .chat-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: var(--gradient-accent);
+      display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;
+    }
+
+    .chat-name { font-weight: 600; font-size: 0.95rem; }
+    .chat-status { font-size: 0.72rem; color: rgba(255,255,255,0.7); }
+
+    .chat-body {
+      padding: 1.2rem; display: flex; flex-direction: column; gap: 0.8rem;
+      background: #0a1520; min-height: 220px;
+    }
+
+    .msg {
+      max-width: 80%; padding: 0.6rem 0.9rem; border-radius: 12px;
+      font-size: 0.82rem; line-height: 1.5;
+    }
+
+    .msg-bot {
+      background: var(--bg-card); border: 1px solid var(--border);
+      align-self: flex-start; border-bottom-left-radius: 4px;
+      opacity: 0; animation: msgPop 0.4s ease forwards;
+    }
+
+    .msg-user {
+      background: #005c4b; align-self: flex-end; border-bottom-right-radius: 4px;
+      opacity: 0; animation: msgPop 0.4s ease forwards;
+    }
+
+    .msg:nth-child(1) { animation-delay: 1s; }
+    .msg:nth-child(2) { animation-delay: 2.2s; }
+    .msg:nth-child(3) { animation-delay: 3.4s; }
+    .msg:nth-child(4) { animation-delay: 4.6s; }
+
+    @keyframes msgPop {
+      from { opacity: 0; transform: scale(0.85) translateY(8px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* SECTIONS */
+    section { padding: 6rem 2rem; position: relative; z-index: 1; }
+
+    .section-label {
+      display: inline-block; font-size: 0.75rem; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--accent-blue); margin-bottom: 0.8rem;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; letter-spacing: -1.5px;
+      line-height: 1.15; margin-bottom: 1rem;
+    }
+
+    .section-desc { color: var(--text-secondary); font-size: 1.05rem; max-width: 540px; line-height: 1.7; }
+
+    .container { max-width: 1140px; margin: 0 auto; }
+
+    /* FEATURES */
+    .features-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem; margin-top: 3.5rem;
+    }
+
+    .feature-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px;
+      padding: 2rem; transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      position: relative; overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--gradient-accent); opacity: 0; transition: opacity 0.3s;
+    }
+
+    .feature-card:hover {
+      border-color: var(--border-glow); transform: translateY(-6px);
+      box-shadow: var(--shadow-card), 0 0 30px rgba(61,142,248,0.1);
+    }
+
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; margin-bottom: 1.2rem;
+    }
+
+    .icon-blue   { background: rgba(61,142,248,0.12); }
+    .icon-green  { background: rgba(0,230,118,0.12); }
+    .icon-purple { background: rgba(124,92,252,0.12); }
+    .icon-teal   { background: rgba(0,212,170,0.12); }
+    .icon-orange { background: rgba(255,160,60,0.12); }
+    .icon-pink   { background: rgba(255,80,130,0.12); }
+
+    .feature-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.6rem; }
+    .feature-desc { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.65; }
+
+    /* HOW IT WORKS */
+    .how-section { background: var(--bg-surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+    .steps-wrapper { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem; margin-top: 3.5rem; }
+
+    .step-card { text-align: center; padding: 2rem 1.5rem; }
+
+    .step-number {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--gradient-accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; font-weight: 800; margin: 0 auto 1.2rem;
+      box-shadow: 0 0 24px rgba(61,142,248,0.3);
+    }
+
+    .step-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .step-desc { color: var(--text-secondary); font-size: 0.88rem; line-height: 1.6; }
+
+    /* SEGMENTS */
+    .segments-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 3.5rem; }
+
+    .segment-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px;
+      padding: 2rem; display: flex; gap: 1.2rem; align-items: flex-start;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+
+    .segment-card:hover { border-color: var(--border-glow); transform: translateY(-4px); }
+
+    .segment-emoji { font-size: 2.2rem; flex-shrink: 0; }
+    .segment-name { font-weight: 700; margin-bottom: 0.4rem; }
+    .segment-text { color: var(--text-secondary); font-size: 0.88rem; line-height: 1.6; }
+
+    /* FORM SECTION */
+    .form-section { background: var(--bg-surface); border-top: 1px solid var(--border); }
+
+    .form-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; max-width: 1000px; margin: 0 auto; }
+
+    .form-info h2 { margin-bottom: 1rem; }
+    .form-info p { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; }
+
+    .form-benefits { list-style: none; margin-top: 1.8rem; display: flex; flex-direction: column; gap: 0.8rem; }
+
+    .form-benefits li { display: flex; align-items: center; gap: 0.7rem; color: var(--text-secondary); font-size: 0.9rem; }
+
+    .benefit-check {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: rgba(0,230,118,0.15); border: 1px solid rgba(0,230,118,0.4);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; color: var(--accent-green); flex-shrink: 0;
+    }
+
+    .contact-form {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px;
+      padding: 2.5rem; box-shadow: var(--shadow-card);
+    }
+
+    .form-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .form-subtitle { color: var(--text-secondary); font-size: 0.87rem; margin-bottom: 1.8rem; }
+
+    .form-group { margin-bottom: 1.2rem; }
+
+    .form-group label {
+      display: block; font-size: 0.82rem; font-weight: 600;
+      color: var(--text-secondary); margin-bottom: 0.4rem; letter-spacing: 0.3px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.75rem 1rem; color: var(--text-primary);
+      font-family: 'Inter', sans-serif; font-size: 0.9rem; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: var(--text-muted); }
+
+    .form-group select option { background: var(--bg-card); color: var(--text-primary); }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(61,142,248,0.12);
+    }
+
+    .form-group textarea { resize: vertical; min-height: 90px; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .btn-submit {
+      width: 100%; padding: 0.95rem; background: var(--gradient-accent);
+      color: #fff; border: none; border-radius: 12px; font-family: 'Inter', sans-serif;
+      font-size: 1rem; font-weight: 700; cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s; margin-top: 0.5rem;
+      box-shadow: 0 4px 20px rgba(61,142,248,0.3);
+      display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+    }
+
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(61,142,248,0.45); }
+    .btn-submit:active { transform: scale(0.98); }
+    .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; }
+
+    /* Success */
+    .form-success { display: none; text-align: center; padding: 2rem; }
+    .form-success.active { display: block; }
+    .success-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .success-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .success-text { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.7; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border); padding: 3rem 2rem;
+      text-align: center; color: var(--text-muted); font-size: 0.85rem;
+      position: relative; z-index: 1;
+    }
+
+    .footer-logo {
+      display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+      font-size: 1.3rem; font-weight: 800; color: var(--text-primary); margin-bottom: 1rem;
+    }
+
+    .footer-links { display: flex; gap: 2rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap; }
+
+    .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--text-secondary); }
+
+    /* ANIMATIONS */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* WHATSAPP FLOAT */
+    .wa-float {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 200;
+      width: 56px; height: 56px; background: #25d366; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-size: 1.6rem;
+      box-shadow: 0 4px 20px rgba(37,211,102,0.4); text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      animation: wa-bounce 3s ease-in-out infinite;
+    }
+
+    .wa-float:hover { transform: scale(1.1); box-shadow: 0 8px 30px rgba(37,211,102,0.55); }
+
+    @keyframes wa-bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .form-wrapper { grid-template-columns: 1fr; gap: 3rem; }
+      .form-row { grid-template-columns: 1fr; }
+      .stats { gap: 1.5rem; }
+      section { padding: 4rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav id="navbar">
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-icon">🤖</div>
+      Atlas
+    </a>
+    <ul class="nav-links">
+      <li><a href="#features">Funcionalidades</a></li>
+      <li><a href="#how">Como Funciona</a></li>
+      <li><a href="#segments">Segmentos</a></li>
+      <li><a href="#contact" class="nav-cta">Falar com Especialista</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-glow-2"></div>
+
+    <div>
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          Integrado à API Oficial do WhatsApp Business
+        </div>
+
+        <h1>
+          Atendimento inteligente,<br/>
+          <span>disponível 24 horas</span>
+        </h1>
+
+        <p class="hero-sub">
+          O Atlas automatiza conversas no WhatsApp com Inteligência Artificial, qualifica seus clientes,
+          presta suporte contínuo e encaminha para humanos quando necessário — sem perder nenhuma oportunidade.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#contact" class="btn-primary">🚀 Quero Experimentar</a>
+          <a href="#how" class="btn-secondary">▶ Como funciona</a>
+        </div>
+
+        <div class="stats">
+          <div class="stat-item">
+            <div class="stat-number">24/7</div>
+            <div class="stat-label">Atendimento contínuo</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">-70%</div>
+            <div class="stat-label">Tarefas repetitivas</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">3×</div>
+            <div class="stat-label">Mais velocidade de resposta</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">100%</div>
+            <div class="stat-label">Personalizável</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHAT MOCKUP -->
+      <div class="hero-visual">
+        <div class="chat-mockup">
+          <div class="chat-header">
+            <div class="chat-avatar">🤖</div>
+            <div>
+              <div class="chat-name">Atlas IA</div>
+              <div class="chat-status">● Online agora</div>
+            </div>
+          </div>
+          <div class="chat-body">
+            <div class="msg msg-bot">Olá! Sou o Atlas 👋 Como posso ajudar você hoje?</div>
+            <div class="msg msg-user">Quero agendar uma consulta</div>
+            <div class="msg msg-bot">Claro! Qual é o seu nome e qual horário você prefere? 📅</div>
+            <div class="msg msg-user">João, prefiro pela manhã</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="container">
+      <div class="reveal">
+        <span class="section-label">Funcionalidades</span>
+        <h2 class="section-title">Tudo que seu atendimento<br/>precisa em um só lugar</h2>
+        <p class="section-desc">O Atlas vai além de um chatbot simples — é um assistente completo que aprende com o seu negócio.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card reveal">
+          <div class="feature-icon icon-blue">🧠</div>
+          <div class="feature-title">Respostas com IA</div>
+          <div class="feature-desc">Responde perguntas frequentes de forma natural e inteligente, entendendo o contexto da conversa.</div>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon icon-green">📋</div>
+          <div class="feature-title">Coleta de Dados</div>
+          <div class="feature-desc">Coleta informações dos clientes automaticamente — nome, contato, interesse — sem intervenção humana.</div>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon icon-purple">🔀</div>
+          <div class="feature-title">Encaminhamento Inteligente</div>
+          <div class="feature-desc">Identifica casos complexos e encaminha para um atendente humano no momento certo, sem frustrar o cliente.</div>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon icon-teal">⚡</div>
+          <div class="feature-title">Fluxos Personalizados</div>
+          <div class="feature-desc">Crie jornadas de atendimento sob medida para o seu negócio: agendamentos, triagem, vendas e mais.</div>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon icon-orange">📊</div>
+          <div class="feature-title">Dashboard Analytics</div>
+          <div class="feature-desc">Acompanhe conversas, taxa de resolução, satisfação dos clientes e métricas de atendimento em tempo real.</div>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon icon-pink">🔗</div>
+          <div class="feature-title">API Oficial WhatsApp</div>
+          <div class="feature-desc">Integrado à API oficial do WhatsApp Business para máxima confiabilidade, segurança e estabilidade.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" class="how-section">
+    <div class="container">
+      <div style="text-align:center;" class="reveal">
+        <span class="section-label">Como Funciona</span>
+        <h2 class="section-title">Implementação simples,<br/>resultado imediato</h2>
+        <p class="section-desc" style="margin:0 auto;">Em poucos passos, seu atendimento inteligente já estará no ar e funcionando.</p>
+      </div>
+      <div class="steps-wrapper">
+        <div class="step-card reveal">
+          <div class="step-number">1</div>
+          <div class="step-title">Diagnóstico do Negócio</div>
+          <div class="step-desc">Entendemos seu fluxo de atendimento atual, dores e objetivos para personalizar a solução.</div>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-number">2</div>
+          <div class="step-title">Configuração e Treino</div>
+          <div class="step-desc">Configuramos o Atlas com as informações da sua empresa e treinamos a IA com seu conteúdo.</div>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-number">3</div>
+          <div class="step-title">Integração ao WhatsApp</div>
+          <div class="step-desc">Conectamos o Atlas ao seu número via API oficial, sem precisar trocar de número.</div>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-number">4</div>
+          <div class="step-title">Go Live & Suporte</div>
+          <div class="step-desc">O Atlas entra em operação e nossa equipe acompanha os primeiros dias para ajustes finos.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEGMENTS -->
+  <section id="segments">
+    <div class="container">
+      <div class="reveal">
+        <span class="section-label">Segmentos</span>
+        <h2 class="section-title">Feito para quem atende<br/>com excelência</h2>
+        <p class="section-desc">Do consultório ao escritório, o Atlas se adapta ao seu segmento com fluxos específicos.</p>
+      </div>
+      <div class="segments-grid">
+        <div class="segment-card reveal">
+          <div class="segment-emoji">🏥</div>
+          <div>
+            <div class="segment-name">Clínicas & Consultórios</div>
+            <div class="segment-text">Agendamento de consultas, triagem inicial, lembretes de retorno e respostas sobre especialidades.</div>
+          </div>
+        </div>
+        <div class="segment-card reveal">
+          <div class="segment-emoji">🏠</div>
+          <div>
+            <div class="segment-name">Imobiliárias</div>
+            <div class="segment-text">Qualificação de leads, envio de imóveis disponíveis, agendamento de visitas e follow-up automático.</div>
+          </div>
+        </div>
+        <div class="segment-card reveal">
+          <div class="segment-emoji">⚖️</div>
+          <div>
+            <div class="segment-name">Escritórios & Advogados</div>
+            <div class="segment-text">Triagem de demandas, coleta de documentos, agendamento de consultorias e FAQs jurídicas.</div>
+          </div>
+        </div>
+        <div class="segment-card reveal">
+          <div class="segment-emoji">🛒</div>
+          <div>
+            <div class="segment-name">E-commerce & Varejo</div>
+            <div class="segment-text">Status de pedidos, suporte pós-venda, recomendação de produtos e recuperação de carrinhos.</div>
+          </div>
+        </div>
+        <div class="segment-card reveal">
+          <div class="segment-emoji">🎓</div>
+          <div>
+            <div class="segment-name">Educação</div>
+            <div class="segment-text">Matrículas, informações sobre cursos, suporte a alunos e envio de materiais automaticamente.</div>
+          </div>
+        </div>
+        <div class="segment-card reveal">
+          <div class="segment-emoji">🔧</div>
+          <div>
+            <div class="segment-name">Qualquer Segmento</div>
+            <div class="segment-text">O Atlas é totalmente escalável e adaptável. Se você atende pelo WhatsApp, o Atlas trabalha por você.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT FORM -->
+  <section id="contact" class="form-section">
+    <div class="container">
+      <div class="form-wrapper">
+
+        <div class="form-info reveal">
+          <span class="section-label">Fale Conosco</span>
+          <h2 class="section-title">Pronto para transformar seu atendimento?</h2>
+          <p>Preencha o formulário e um especialista do Atlas entrará em contato via WhatsApp para entender seu negócio e apresentar a melhor solução para você.</p>
+          <ul class="form-benefits">
+            <li><span class="benefit-check">✓</span> Atendimento personalizado por especialista</li>
+            <li><span class="benefit-check">✓</span> Diagnóstico gratuito do atendimento atual</li>
+            <li><span class="benefit-check">✓</span> Demonstração ao vivo da plataforma</li>
+            <li><span class="benefit-check">✓</span> Proposta personalizada para seu negócio</li>
+            <li><span class="benefit-check">✓</span> Sem compromisso, sem taxas ocultas</li>
+          </ul>
+        </div>
+
+        <div class="reveal">
+          <div class="contact-form" id="contact-form-card">
+
+            <div id="form-fields">
+              <div class="form-title">Comece agora 🚀</div>
+              <div class="form-subtitle">Resposta em até 24 horas úteis via WhatsApp</div>
+
+              <form id="atlasForm" novalidate>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="name">Nome completo *</label>
+                    <input type="text" id="name" name="name" placeholder="Seu nome" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="company">Empresa / Negócio</label>
+                    <input type="text" id="company" name="company" placeholder="Nome da empresa" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="whatsapp">WhatsApp *</label>
+                  <input type="tel" id="whatsapp" name="whatsapp" placeholder="(11) 9 0000-0000" required maxlength="16" />
+                </div>
+
+                <div class="form-group">
+                  <label for="email">E-mail</label>
+                  <input type="email" id="email" name="email" placeholder="seu@email.com" />
+                </div>
+
+                <div class="form-group">
+                  <label for="segment">Segmento *</label>
+                  <select id="segment" name="segment" required>
+                    <option value="" disabled selected>Selecione seu segmento</option>
+                    <option value="clinica">Clínica / Consultório</option>
+                    <option value="imobiliaria">Imobiliária</option>
+                    <option value="escritorio">Escritório / Advocacia</option>
+                    <option value="ecommerce">E-commerce / Varejo</option>
+                    <option value="educacao">Educação</option>
+                    <option value="outro">Outro</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="message">Conte-nos mais (opcional)</label>
+                  <textarea id="message" name="message" placeholder="Descreva brevemente seu atendimento atual e o que você gostaria de melhorar..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                  <span id="btn-text">💬 Falar com Especialista</span>
+                </button>
+              </form>
+            </div>
+
+            <div class="form-success" id="form-success">
+              <div class="success-icon">🎉</div>
+              <div class="success-title">Mensagem enviada com sucesso!</div>
+              <div class="success-text">
+                Recebemos seus dados e um especialista do Atlas entrará em contato com você pelo WhatsApp em breve.<br/><br/>
+                Fique atento ao seu número — vamos transformar seu atendimento! 🚀
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">
+      <div class="nav-logo-icon">🤖</div>
+      Atlas
+    </div>
+    <div class="footer-links">
+      <a href="#features">Funcionalidades</a>
+      <a href="#how">Como Funciona</a>
+      <a href="#segments">Segmentos</a>
+      <a href="#contact">Contato</a>
+    </div>
+    <p>© 2025 Atlas — Assistente Inteligente para WhatsApp. Todos os direitos reservados.</p>
+  </footer>
+
+  <!-- WHATSAPP FLOAT -->
+  <a href="#contact" class="wa-float" title="Falar com especialista" id="wa-float-btn">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+  </a>
+
+  <script>
+    // SCROLL REVEAL
+    const reveals = document.querySelectorAll('.reveal');
+    const revealList = Array.from(reveals);
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const idx = revealList.indexOf(entry.target) % 4;
+          setTimeout(() => entry.target.classList.add('visible'), idx * 80);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    reveals.forEach(el => observer.observe(el));
+
+    // WHATSAPP MASK
+    document.getElementById('whatsapp').addEventListener('input', function(e) {
+      let v = e.target.value.replace(/\D/g, '');
+      if (v.length <= 2) {
+        v = v.replace(/^(\d{0,2})/, '($1');
+      } else if (v.length <= 7) {
+        v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+      } else {
+        v = v.replace(/^(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+      }
+      e.target.value = v;
+    });
+
+    // FORM SUBMIT
+    document.getElementById('atlasForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name     = document.getElementById('name').value.trim();
+      const whatsapp = document.getElementById('whatsapp').value.trim();
+      const segment  = document.getElementById('segment').value;
+
+      if (!name) {
+        shake(document.getElementById('name')); return;
+      }
+      if (!whatsapp) {
+        shake(document.getElementById('whatsapp')); return;
+      }
+      if (!segment) {
+        shake(document.getElementById('segment')); return;
+      }
+
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      document.getElementById('btn-text').textContent = 'Enviando...';
+
+      setTimeout(() => {
+        document.getElementById('form-fields').style.display = 'none';
+        document.getElementById('form-success').classList.add('active');
+      }, 1400);
+    });
+
+    function shake(el) {
+      el.style.borderColor = '#ff4d6d';
+      el.style.boxShadow = '0 0 0 3px rgba(255,77,109,0.15)';
+      el.focus();
+      setTimeout(() => {
+        el.style.borderColor = '';
+        el.style.boxShadow = '';
+      }, 2000);
+    }
+
+    // NAVBAR SCROLL
+    window.addEventListener('scroll', () => {
+      const nav = document.getElementById('navbar');
+      nav.style.background = window.scrollY > 50
+        ? 'rgba(7, 11, 20, 0.98)'
+        : 'rgba(7, 11, 20, 0.85)';
+    });
+  </script>
+</body>
+</html>
