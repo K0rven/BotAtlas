@@ -6,7 +6,7 @@
 // liga essa lógica aos elementos da página.
 
 export const N8N_WEBHOOK_URL =
-  'https://n8n.local/webhook-test/formulario-atlas';
+  'http://localhost:5678/webhook-test/formulario-atlas';
 
 const VALID_SEGMENTS = [
   'clinica',
